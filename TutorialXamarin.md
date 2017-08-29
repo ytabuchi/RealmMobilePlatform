@@ -18,29 +18,29 @@ Linux がある方は Linux にインストールしてアクセスしても良�
 
 Realm Object Server の展開が終了したら、ルートディレクトリの `start-object-server.command` を実行します。
 
-![Realm](Realm0-01.png)
+![Realm](images/Realm0-01.png)
 
 ブラウザが起動し、ログイン画面が表示されます。
 
-![Realm](Realm0-02.png)
+![Realm](images/Realm0-02.png)
 
 任意のメールアドレスとパスワードで Admin User を作成します。この時のユーザー名とパスワードを後で使用しますので、メモしておきましょう。ログインすると Dashboard や存在する Realm Database、User などが閲覧できます。
 
-![Realm](Realm0-03.png)
+![Realm](images/Realm0-03.png)
 
 Realm Object Server の起動を確認したら、`＜ルートディレクトリ＞/demo/RealmTasks/RealmTasks.app` を起動します。
 
-![Realm](Realm0-04.png)
+![Realm](images/Realm0-04.png)
 
 先ほど作成した Admin User でログインします。ログイン後、右上の「＋」ボタンからタスクを登録します。
 
-![Realm](Realm0-05.png)
+![Realm](images/Realm0-05.png)
 
 ブラウザの Realm タブから、データが登録されていることが分かります。
 
-![Realm](Realm0-06.png)
+![Realm](images/Realm0-06.png)
 
-![Realm](Realm0-07.png)
+![Realm](images/Realm0-07.png)
 
 
 
@@ -52,49 +52,32 @@ Realm Object Server の起動を確認したら、`＜ルートディレクト�
 
 プロジェクトを作成します。新規プロジェクトを作成して「Multiplatform＞App＞Black Forms App」です。
 
-![Realm](Realm1-01.png)
+![Realm](images/Realm1-01.png)
 
 今回は名前を「RealmMobilePlatformSample」にしました。また、`ポータブルクラスライブラリ（Portable Class Library）` ではなく、`共有ライブラリ（Shared Library）` を使用しますのでご注意ください。
 
-![Realm](Realm1-02.png)
+![Realm](images/Realm1-02.png)
 
 そのままプロジェクトを作成します。
 
-![Realm](Realm1-03.png)
+![Realm](images/Realm1-03.png)
 
 最初に表示するページとして `RealmMobilePlatformSamplePage.xaml` と `RealmMobilePlatformSamplePage.xaml.cs` が作成されているはずです。今回は macOS を使用して開発して行きますので文中にはこのファイル名が出てきますが、Windows の場合は `MainPage.xaml` と `MainPage.xaml.cs` が作成されますので適宜読み替えてください。
 
 #### Windows
 
 プロジェクトを作成します。「Visual C#＞Cross-Platform＞Cross Platform App (Xamarin)」です。
-![Realm](Realm1-04.png)
+![Realm](images/Realm1-04.png)
 
 次の画面で「空のアプリ」「Xamarin.Forms」「共有プロジェクト」を選択した状態で「OK」をクリックしてプロジェクトを作成してください。
 
-![Realm](Realm1-05.png)
+![Realm](images/Realm1-05.png)
 
 ### 画面を作成
 
-「2. Remove parts of the Xcode project to start with a simple base」の章です。チュートリアルでは簡略化のため Storyborad を削除していますが、Xamarin.Forms では XAML で画面を作成するため、そのまま画面を作成していきます。
+Xamarin.Forms のページを作成していきます。
 
-`AppDelegate.swift` を以下のように書き換える部分、
-
-```swift
-import UIKit
-
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UINavigationController(rootViewController: ViewController(style: .plain))
-        window?.makeKeyAndVisible()
-        return true
-    }
-}
-```
-
-これは、`ViewController` を呼びだしているコードなので、Xamarin.Forms では `App.xaml.cs` の `MainPage` の指定に該当します。次のように `NavigationPage` で初期ページを呼び出します。
+`App.xaml.cs` の `MainPage` の指定を次のように `NavigationPage` で初期ページを呼び出しますように変更します。
 
 ```csharp
 MainPage = new NavigationPage(new RealmMobilePlatformSamplePage());
@@ -103,42 +86,21 @@ MainPage = new NavigationPage(new RealmMobilePlatformSamplePage());
 
 ### NuGet パッケージをインストール
 
-「3. Import Realm Swift and create models」の章は Framework のインストールなので、Xamarin.Forms では NuGet パッケージをインストールします。
+NuGet パッケージをインストールします。
+
+macOS では、iOS／Android のプロジェクトを右クリックして、「追加＞NuGet パッケージの追加」でパッケージマネージャーを起動します。Windows ではソリューションを右クリックして、「ソリューションの NuGet パッケージの管理」でパッケージマネージャーを起動します。
 
 「Realm」で検索して、「Realm 1.6.0」（2017/08/28 時点）をインストールします。
 
-![Realm](Realm2-01.png)
+![Realm](images/Realm2-01.png)
 
-![Realm](Realm2-02.png)
+![Realm](images/Realm2-02.png)
 
 少し時間が掛かるのと、ライブラリの使用許諾のダイアログが表示されるのでのんびり待ちましょう。
 
-ViewController に以下のコードを追加する部分、
+Realm ではデータベーススキーマはモデルクラスで実装します。
 
-```swift
-import RealmSwift
-
-// MARK: Model
-
-final class TaskList: Object {
-    dynamic var text = ""
-    dynamic var id = ""
-    let items = List<Task>()
-
-    override static func primaryKey() -> String? {
-        return "id"
-    }
-}
-
-final class Task: Object {
-    dynamic var text = ""
-    dynamic var completed = false
-}
-```
-
-これはモデルクラスの作成に該当します。Realm ではデータベーススキーマはモデルクラスで実装します。
-
-Xamarin.Forms の場合も同様にモデルクラスを作成します。`RealmMobilePlatformSamplePage.xaml.cs` に作成しても良いですが、今回は新規に `TaskList.cs` ファイルを作成します。
+Xamarin.Forms プロジェクトに `TaskList.cs` ファイルを作成します。
 
 ```csharp
 using System.Collections.Generic;
@@ -882,7 +844,7 @@ private void OnSelect(object sender, SelectedItemChangedEventArgs e)
 
 動かしてみましょう！
 
-![Realm](RealmFinish.gif)
+![Realm](images/RealmFinish.gif)
 
 
 お疲れ様でした！これで全てのチュートリアルは終了です。
