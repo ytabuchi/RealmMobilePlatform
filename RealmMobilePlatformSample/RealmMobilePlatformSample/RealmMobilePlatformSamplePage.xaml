@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:RealmMobilePlatformSample"
+             x:Class="RealmMobilePlatformSample.RealmMobilePlatformSamplePage"
+             Title="My Tasks">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:OpacityConverter x:Key="opacityConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="＋"
+                     Clicked="AddAsync" />
+    </ContentPage.ToolbarItems>
+    <ListView x:Name="listView"
+              ItemsSource="{Binding}"
+              ItemSelected="OnSelect">
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <ViewCell.ContextActions>
+                        <MenuItem Clicked="OnDelete" Text="Delete" CommandParameter="{Binding}" IsDestructive="True" />
+                    </ViewCell.ContextActions>
+                    <Label Text="{Binding Title}"
+                           Opacity="{Binding Completed, Converter={StaticResource opacityConverter}}"
+                           VerticalOptions="Center"
+                           Margin="15,0,0,0"/>
+                    <!--  -->
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</ContentPage>
