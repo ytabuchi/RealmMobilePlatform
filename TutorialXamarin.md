@@ -10,11 +10,11 @@ Realm Mobile Platform のインストールは、公式ドキュメントの [Ge
 
 macOS 用には、ライブラリを含む Realm Object Server（Realm Mobile Platform のサーバーアプリの呼称）が用意されていて、圧縮ファイルを回答しコマンドを実行するだけで動作します。非常に簡単に導入できるため、今回は macOS 版を使用してこのチュートリアルを進めたいと思います。
 
-Linux がある方は Linux にインストールしてアクセスしても良いですし、docker で立てても良いかもしれないですね。
+Linux がある方は Linux にインストールしてアクセスしても良いですし、docker で立てても良いかもしれないですね。（Azure にハンズオンで環境がない方向けに使ってもらう用のインスタンスは立てています。）
 
 ### 事前準備
 
-事前準備として、Realm Object Server を起動し、データを登録します。
+事前準備として、Realm Object Server を起動し、データを登録する必要があります。
 
 Realm Object Server の展開が終了したら、ルートディレクトリの `start-object-server.command` を実行します。
 
@@ -98,7 +98,7 @@ macOS では、iOS／Android のプロジェクトを右クリックして、「
 
 少し時間が掛かるのと、ライブラリの使用許諾のダイアログが表示されるのでのんびり待ちましょう。
 
-Realm ではデータベーススキーマはモデルクラスで実装します。
+Realm ではデータベーススキーマはモデルクラスで実装します。
 
 Xamarin.Forms プロジェクトに `TaskList.cs` ファイルを作成します。
 
@@ -140,25 +140,7 @@ public class Task : RealmObject
 
 ### ListView の作成
 
-「4. Add a title and register a cell class for use with our table view」「5. Use a Realm List to display Tasks in the table view」の章は Ream ではなく、単純に iOS の UITableView を表示し、データを追加する処理です。
-
-```swift
-// MARK: UITableView
-
-override func tableView(_ tableView: UITableView?, numberOfRowsInSection section: Int) -> Int {
-    return items.count
-}
-
-override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-    let item = items[indexPath.row]
-    cell.textLabel?.text = item.text
-    cell.textLabel?.alpha = item.completed ? 0.5 : 1
-    return cell
-}
-```
-
-この部分ですが、`cell.textLabel?.alpha = item.completed ? 0.5 : 1` に注意が必要です。`Completed` プロパティが true なら透明度が 0.5 になる。ということで、Xamarin.Forms で実現するには、IValueConverter が必要です。
+まずは Ream ではなく、単純に ListView を表示し、データを追加する処理です。`ListView` の `Cell` の文字色を `Completed` プロパティが `true` なら透明度が 0.5、`false`（作成時）は透明度が １ になるようにします。Xamarin.Forms で実現するには、IValueConverter が必要です。
 
 プロジェクトにクラス `OpacityConverter.cs` を作成し、次のコードで置き換えます。
 
@@ -181,13 +163,13 @@ namespace RealmMobilePlatformSample
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // 使わないので未実装です。
         }
     }
 }
 ```
 
-Xamarin.Forms の `ListView` を作成します。`RealmMobilePlatformSamplePage.xaml` の `ContentPage` にタイトルプロパティを追加し、以下の `ListView` を追加します。（Windows の場合はクラス名が `MainPage` なので注意してください。）
+続いて `ListView` を作成します。`RealmMobilePlatformSamplePage.xaml` の `ContentPage` にタイトルプロパティを追加し、以下の `ListView` を追加します。（Windows の場合はクラス名が `MainPage` なので注意してください。）
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -233,36 +215,19 @@ public partial class RealmMobilePlatformSamplePage : ContentPage
         _items.Add(new Task{ Title = "My First Task" });
         this.BindingContext = _items;
     }
-    ...
-    ...
+
+	// 略
 ```
 
-Swift のサンプルでは、`UITableView` をコードで定義していますが、Xamarin.Forms では XAML で作成した `ListView` の `ItemsSource` プロパティに `{Binding}` を指定し、バインド対象として `BindingContext = _items` を指定すると各列のセルに `Task` データが表示されます。各セルは標準で用意されている `TextCell` などを使用しても良いですし、`ViewCell` で独自にセルを設定しても構いません。今回は、`Opacity` をバインドする必要があったため、`ViewCell` の中に `Label` を使用しました。
+XAML で作成した ListView の `ItemsSource` プロパティに `{Binding}` を指定し、バインド対象として `BindingContext = _items` を指定すると各列のセルに `Task` データが表示されます。各セルは標準で用意されている `TextCell` などを使用しても良いですし、`ViewCell` で独自にセルを設定しても構いません。今回は、`Opacity` をバインドする必要があったため、`ViewCell` の中に `Label` を使用しました。
 
 ### データを作成する機能を追加
 
-「6. Add support for creating new tasks」の章です。Swift での次の部分、
+#### ダイアログを作成
 
-```swift
-func add() {
-    let alertController = UIAlertController(title: "New Task", message: "Enter Task Name", preferredStyle: .alert)
-    var alertTextField: UITextField!
-    alertController.addTextField { textField in
-        alertTextField = textField
-        textField.placeholder = "Task Name"
-    }
-    alertController.addAction(UIAlertAction(title: "Add", style: .default) { _ in
-        guard let text = alertTextField.text , !text.isEmpty else { return }
+データを入力するため、入力欄付きのダイアログを作成します。Xamarin.Forms のダイアログには入力欄付きのものは存在しないため、[Dependency Services](https://developer.xamarin.com/guides/xamarin-forms/application-fundamentals/dependency-service/) を使用して、iOS／Android のネイティブのダイアログを呼びだします。
 
-        self.items.append(Task(value: ["text": text]))
-        self.tableView.reloadData()
-    })
-    present(alertController, animated: true, completion: nil)
-}
-```
-
-を移植していきますが、`UIAlertController` に `alertController.addTextField` で入力欄を追加しています。Xamarin.Forms では入力欄付きのダイアログは存在しないため、[Dependency Services](https://developer.xamarin.com/guides/xamarin-forms/application-fundamentals/dependency-service/) を使用して、iOS／Android のネイティブのダイアログを呼びだします。
-
+##### Xamarin.Forms プロジェクトでの作業
 
 最初に Xamarin.Forms のプロジェクトにインターフェースを作成します。
 
@@ -275,7 +240,7 @@ public interface IDisplayTextAlert
 }
 ```
 
-次に、`RealmMobilePlatformSamplePage.xaml` のコードビハインドに次のメソッドを追加します。`DependencyService.Get<IDisplayTextAlert>().Show()` の部分がインターフェース経由で iOS／Android のコードを呼び出す箇所です。
+次に、`RealmMobilePlatformSamplePage.xaml` のコードビハインドに次のメソッドを追加します。
 
 ```csharp
 private async void AddAsync(object sender, EventArgs e)
@@ -290,9 +255,11 @@ private async void AddAsync(object sender, EventArgs e)
 }
 ```
 
-Swift コードでは `UIAlertAction` のアクションにコレクションの追加のロジックを組み込んでいますが、ダイアログ表示は iOS／Android のネイティブコードで実装するため、一度共通コードにダイアログの入力欄の文字を返し、共通コード内でチェックを行ないます。
+`DependencyService.Get<IDisplayTextAlert>().Show()` の部分がインターフェース経由で iOS／Android のコードを呼び出す箇所です。
 
-iOS プロジェクトに移動して、`DisplayTextAlert.cs` クラスを作成します。次のコードで置き換えます。
+##### iOS／Android プロジェクトでの作業
+
+iOS プロジェクトに移動して、`DisplayTextAlert.cs` クラスを作成します。次のコードで置き換えます。
 
 ```csharp
 using System;
@@ -338,6 +305,8 @@ namespace RealmMobilePlatformSample.iOS
 ```
 
 AddAsync ボタンが押された時に return を返したかったので、[@amay077](https://twitter.com/amay077) さんの [UIAlertController を async/await 対応させて便利に使う \- Qiita](http://qiita.com/amay077/items/0a3fa3dfac7f29a2807d) を参考にしました。
+
+Dependency Services のコード内では PresentViewController は `UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController` でアクセスできます。
 
 Android プロジェクトを開き、同様に `DisplayTextAlert.cs` クラスを追加します。
 iOS と同様に以下のコードで置き換えます。
@@ -387,18 +356,11 @@ namespace RealmMobilePlatformSample.Droid
 }
 ```
 
-Xamarin.Forms プロジェクトに戻り、`RealmMobilePlatformSamplePage.xaml` のコードビハインド内の最初に作成した `_items.Add(new Task{ Title = "My First Task" });` を削除します。
+Dependency Services のコード内で現在の `Context` は `Xamarin.Forms.Forms.Context` でアクセスできます。
 
-ドキュメントで以下の部分
+#### ダイアログの呼び出しを実装
 
-```swift
-func setupUI() {
-    // ... existing function ...
-    navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
-}
-```
-
-は `rightBarButtonItem` に標準で用意されている Add スタイル（＋が表示される）のボタンを追加しています。Xamarin.Forms の場合は、[Page](https://developer.xamarin.com/api/type/Xamarin.Forms.Page/) クラスの `ToolbarItems` プロパティを使用します。
+Xamarin.Forms プロジェクトでの作業に戻ります。`NavigationPage` の右上に＋ボタンを追加してダイアログを呼び出します。[Page](https://developer.xamarin.com/api/type/Xamarin.Forms.Page/) クラスの `ToolbarItems` プロパティを使用します。
 
 `RealmMobilePlatformSamplePage.xaml` の `ContentPage.Resources` の後に以下を追加します。
 
@@ -410,29 +372,34 @@ func setupUI() {
 
 `ToolbarItem` のプロパティは[公式ドキュメント](https://developer.xamarin.com/api/type/Xamarin.Forms.ToolbarItem/)を参照してください。
 
+次にコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` の初期データを追加する以下のコードを削除します。
+
+```csharp
+// これを削除
+_items.Add(new Task{ Title = "My First Task" });
+```
+
 ここで一度ビルドして、AddAsync ボタンとダイアログが正常に動作するか確認しましょう。
 
+無事ダイアログで入力したデータが ListView に表示されていれば次に進みます。
 
 ### Realm への追加と同期処理の実装
 
-「7. Back items by a Realm and integrate sync」の章です。
-
-using と `_items` フィールドの後に以下を追加します。
+実際に Realm にデータを追加していきましょう。コードビハインド `RealmMobilePlatformSamplePage.xaml.cs` を開き、using を追加します。
 
 ```csharp
 using Realms;
 using Realms.Sync;
 ```
 
+ クラス内の `_items` フィールドの後に以下のフィールドを追加します。
 
 ```csharp
 Realm _realm;
 IDisposable _notificationToken;
 ```
 
-`setupUI()` の後、Xamarin.Forms では `InitializeComponent()` の後に `SetupRealmAsync();` を追加しています。ドキュメントでは iOS のみなのでサーバー IP は `127.0.0.1` で良いのですが、Android Emulator からアクセスする際は `10.0.2.2` になります。（実機や別のマシンに立てた Realm Object Server にアクセスする場合はその Realm Object Server の IP アドレスとポートを指定します。）
-
-`Add` メソッドの下に `SetupRealmAsync` メソッドを追加します。サンプルのソースコードでは、`.gitignore` に指定して公開されないようにした `Secrets.cs` に情報を記載しています。
+`AddAsync` メソッドの下に `SetupRealmAsync` メソッドを追加します。サンプルのソースコードでは、`.gitignore` に指定して公開されないようにした `Secrets.cs` に情報を記載しています。
 
 ```csharp
 private async void SetupRealmAsync()
@@ -442,6 +409,8 @@ private async void SetupRealmAsync()
     var serverIp = (Device.RuntimePlatform == Device.Android) ? "10.0.2.2:9080" : "127.0.0.1:9080";
 }
 ```
+
+> `serverIp` は macOS で iOS Simulator と Android Emulator からローカルホストの Realm Object Server にアクセスする場合の IP です。iOS Simulator からは `127.0.0.1`、Android Emulator からは `10.0.2.2` でローカルホストの IP にアクセスできます。実機にデプロイする場合や LAN 内の別マシン や Azure／AWS に立てた Realm Object Server にアクセスする場合はその Realm Object Server の IP アドレスとポートを指定します。
 
 コンストラクターの `InitializeComponent` の後で `SetupRealmAsync` メソッドの呼びだしを追加します。
 
@@ -457,47 +426,12 @@ public RealmMobilePlatformSamplePage()
 ```
 
 
-続いて以下の部分、
-
-```swift
-func setupRealm() {
-    // ... existing function ...
-    SyncUser.logIn(with: .usernamePassword(username: username, password: password, register: false), server: URL(string: "http://127.0.0.1:9080")!) { user, error in
-        guard let user = user else {
-            fatalError(String(describing: error))
-        }
-
-        DispatchQueue.main.async {
-            // Open Realm
-            let configuration = Realm.Configuration(
-                syncConfiguration: SyncConfiguration(user: user, realmURL: URL(string: "realm://127.0.0.1:9080/~/realmtasks")!)
-            )
-            self.realm = try! Realm(configuration: configuration)
-
-            // Show initial tasks
-            func updateList() {
-                if self.items.realm == nil, let list = self.realm.objects(TaskList.self).first {
-                    self.items = list.items
-                }
-                self.tableView.reloadData()
-            }
-            updateList()
-
-            // Notify us when Realm changes
-            self.notificationToken = self.realm.addNotificationBlock { _ in
-                updateList()
-            }
-        }
-    }
-}
-```
-
-を移植します。`SetupRealmAsync` メソッドを作成し、`SyncUser.logIn`、`Realm.Configuration`、`Realm(configuration: configuration)` の部分は次のコードを追加します。
+続いて Realm Object Server へのアクセスを実装していきます。`SetupRealmAsync` メソッドに次のコードを追加します。
 
 ```csharp
 private async void SetupRealmAsync()
 {
-    ...
+    // 略
 
     User user = null;
     try
@@ -521,16 +455,16 @@ private async void SetupRealmAsync()
         return;
     }
 
-    ...
+    // 略
 }
 ```
 
-最初に `Realms.Sync.User` クラスの `Current` メソッドで既にログインしている場合にユーザーを取得する処理がありますが、これは Swift のサンプルにはありません。（[Realtime Databases with the Realm Mobile Platform | Xamarin Blog](https://blog.xamarin.com/shared-drawing-with-the-realm-mobile-platform/) のコードを参考（パクリ）にしています。）
+最初に `Realms.Sync.User` クラスの `Current` メソッドで既にログインしている場合にユーザーを取得する処理があります。（[Realtime Databases with the Realm Mobile Platform | Xamarin Blog](https://blog.xamarin.com/shared-drawing-with-the-realm-mobile-platform/) のコードを参考（パクリ）にしています。）
 
-Swift での `SyncUser.logIn(with: .usernamePassword ...` の部分、Xamarin.Forms 用の SDK では、`Realm.Sync.Credentials` クラスの `UsernamePassword` メソッドを使用してクレデンシャルを作成し、`Realm.Sync.User` クラスの `LoginAsync (Credentials credentials, Uri serverUrl)` メソッドの引数で渡してあげます。Swift の `try! Realm(configuration: configuration)` の部分が、`Realm.GetInstance(config)` メソッドです。
+その後、`Realm.Sync.Credentials` クラスの `UsernamePassword` メソッドを使用してクレデンシャルを作成し、`Realm.Sync.User` クラスの `LoginAsync (Credentials credentials, Uri serverUrl)` メソッドの引数で渡してあげます。最後に、`Realm.GetInstance(config)` で Realm Object Server への接続をインスタンス化します。
 
 
-その後、Swift では初期タスクとして `func updateList()` 内で　Realm Object Server からデータを取得して取得したデータで UITableView をリロードしていますので、C# でも `UpdateList` メソッドを用意します。
+その後、初期タスクとして Realm Object Server からデータを取得して、取得したデータで ListView のバインディングを再指定する `UpdateList` メソッドを作成します。
 
 ```csharp
 private void UpdateList()
@@ -541,8 +475,9 @@ private void UpdateList()
 }
 ```
 
+再度 `SetupRealmAsync` に戻り、処理を追加していきます。
 
-`user` が取得できていれば、`UpdateList` メソッドを呼び出します。その後、Realm Object Server 側で変更があった際に発行される `notificationToken` を受け取った際の処理 `SubscribeForNotifications` 内でも `UpdateList` メソッドを呼び出します。`SetupRealmAsync` メソッドの最後に以下のコードを追加します。
+`user` が取得できていれば、先ほど作成した `UpdateList` メソッドを呼び出します。その後、Realm Object Server 側で変更があった際に発行される `notificationToken` を受け取った際の処理 `SubscribeForNotifications` 内でも `UpdateList` メソッドを呼び出します。`SetupRealmAsync` メソッドの最後に以下のコードを追加します。
 
 ```csharp
 if (user != null)
@@ -552,24 +487,17 @@ if (user != null)
 }
 ```
 
-`Add` メソッドを Realm に追加するように置き換えている部分、
-
-```Swift
-try! items.realm?.write {
-    items.insert(Task(value: ["text": text]), at: items.filter("completed = false").count)
-}
-```
-
-増えているのは上記なので、以下のように置き換えます。
+ListView を更新するだけだった `AddAsync` メソッドを以下のように書き換えます。
 
 ```csharp
+var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
 if (!string.IsNullOrEmpty(text))
 {
     try
     {
         _realm.Write(() =>
         {
-            _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
+            _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Count(), new Task
             {
                 Title = text
             });
@@ -582,9 +510,7 @@ if (!string.IsNullOrEmpty(text))
 }
 ```
 
-`Add` だと Realm 側では最後にデータが入りますが、`ListView` の表示が古い方が下になっているため、見えているデータの最初に表示するために `Insert` を使用します。`Insert` の `Index int` には Swift では `filter` 関数を使っていますが、C# であれば LINQ の出番ですね。`Completed` を `Where` しましょう。
-
-現時点でのコードビハインドは以下のコードになっているはずです。
+現時点でのコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` は以下のコードになっているはずです。
 
 ```csharp
 using System;
@@ -622,7 +548,7 @@ namespace RealmMobilePlatformSample
                 {
                     _realm.Write(() =>
                     {
-                        _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
+                        _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Count(), new Task
                         {
                             Title = text
                         });
@@ -682,9 +608,9 @@ namespace RealmMobilePlatformSample
 ```
 
 
-最後に TLS ではないネットワークアクセスをするので、`Info.plist` にその設定をします。
+最後に iOS プロジェクトの設定をします。iOS アプリは TLS ではないネットワークアクセスをするので、`Info.plist` に「App Transport Security」の設定が必要です。
 
-`Info.plist` を右クリックして、任意のテキストエディタで開き、最後の `</dict>` の前に次を追加します。
+`Info.plist` を右クリックして、任意のテキストエディタで開き、最後の `</dict>` の前に次を追加します。Windows の場合は「ファイルを開くアプリケーションの選択＞XML (テキスト) エディター」を選択します。
 
 ```xml
 <key>NSAppTransportSecurity</key>
@@ -694,47 +620,15 @@ namespace RealmMobilePlatformSample
 </dict>
 ```
 
-おめでとうございます！これで Realm と同期する最初のアプリが完成しました！
+おめでとうございます！これで Realm Object Server と同期する最初のアプリが完成しました！
 
-![動作画面](./Realm.gif)
+![Realm](images/Realm.gif)
 
-### タスクの移動と削除をサポート
+### タスクの削除をサポート
 
-まずは動くものができましたが、引き続き実装を追加して行きます。iOS の UITableView でのエディットモードを使用しています。削除処理を追加してみましょう。「8. Support moving and deleting tasks」の部分です。
+まずは動くものができましたが、引き続き処理を追加して行きます。`Context Actions` を使ってスワイプ（iOS）と長押し（Android）でタスクの削除を実装します。
 
-Swift で以下の部分、
-
-```swift
-func setupUI() {
-    // ... existing function ...
-    navigationItem.leftBarButtonItem = editButtonItem
-}
-```
-
-と
-
-```swift
-override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-    try! items.realm?.write {
-        items.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
-    }
-}
-
-override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-    if editingStyle == .delete {
-          try! realm.write {
-              let item = items[indexPath.row]
-              realm.delete(item)
-          }
-    }
-}
-```
-
-です。残念ながら Xamarin.Forms では、ListView のエディットモードがサポートされていないため、Custom Renderer を使うことになりますが、ちょっと大変そうなので、今回このパートはパスします。時間ができたら ListView Renderer を作成したいと思います。
-
-代わりに、Xamarin.Forms の ListView に標準で付属している `Context Actions` を使ってスワイプ（iOS）と長押し（Android）でアイテムの削除を実装したいと思います。
-
-Context Actions は、XAML では Cell 内に定義します。
+`RealmMobilePlatformSamplePage.xaml` を開き、`ListView` の `ViewCell` 内に `Context Actions` を作成します。
 
 ```xml
 <ViewCell.ContextActions>
@@ -742,7 +636,7 @@ Context Actions は、XAML では Cell 内に定義します。
 </ViewCell.ContextActions>
 ```
 
-`CommandParameter` に Binding することで、Delete した要素（ここでは Task 型）を取得できます。
+`CommandParameter` にバインドすることで、Delete したアイテム（ここでは Task）を取得できます。
 
 コードビハインド `RealmMobilePlatformSamplePage.xaml.cs` を開き、`AddAsync` メソッドの後に以下のメソッドを追加します。
 
@@ -766,46 +660,24 @@ private void OnDelete(object sender, EventArgs e)
 }
 ```
 
-まず MenuItem　を取得し、その `CommandParameter` を取得して Task にキャストしています。後は、`Realm.Write` のアクションで `Remove` メソッドに `Task` を渡してあげています。
+まず `MenuItem` を取得し、その `CommandParameter` を取得して、`Realm.Write` のアクションで `Remove` メソッドに `Task` を渡します。
 
 ### タップすることでタスクの完了にトグルする処理をサポート
 
-アイテムをタップすると、完了（して一番最後に移動）、未完了をトグルする処理を追加します。「9. Support toggling the ‘completed’ state of a task by tapping it」の部分です。
-
-Swift で次の部分、
-
-```swift
-override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let item = items[indexPath.row]
-    try! item.realm?.write {
-        item.completed = !item.completed
-        let destinationIndexPath: IndexPath
-        if item.completed {
-            // move cell to bottom
-            destinationIndexPath = IndexPath(row: items.count - 1, section: 0)
-        } else {
-            // move cell just above the first completed item
-            let completedCount = items.filter("completed = true").count
-            destinationIndexPath = IndexPath(row: items.count - completedCount - 1, section: 0)
-        }
-        items.move(from: indexPath.row, to: destinationIndexPath.row)
-    }
-}
-```
-
-で `item.completed` の状態により、完了、非完了を書き換え、一番下に配置したり、完了の一つ上に配置したりしています。Xamarin.Forms でも実装して行きましょう。
+アイテムをタップすると、完了（して一番最後に移動）、未完了をトグルする処理を追加します。
 
 最初に ListView に `ItemSelected` イベントを追加します。
 
 ```xml
+// 略
 <ListView x:Name="listView"
           ItemsSource="{Binding}"
           ItemSelected="OnSelect">
     <ListView.ItemTemplate>
-    ...
+    // 略
 ```
 
-コードビハインドで `OnDelete` メソッドの後に `OnSelect` メソッドを追加します。
+次にコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` で `OnDelete` メソッドの後に `OnSelect` メソッドを追加します。
 
 ```csharp
 private void OnSelect(object sender, SelectedItemChangedEventArgs e)
@@ -842,7 +714,7 @@ private void OnSelect(object sender, SelectedItemChangedEventArgs e)
 }
 ```
 
-動かしてみましょう！
+では動かしてみましょう！
 
 ![Realm](images/RealmFinish.gif)
 
