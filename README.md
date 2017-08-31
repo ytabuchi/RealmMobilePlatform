@@ -2,4 +2,4 @@
 
 Tutorial for Realm Mobile Platform with Xamarin.Forms
 
-Japanese Guide is [here](TudorialXamarin.md).
+Japanese Guide is [here](https://github.com/ytabuchi/RealmMobilePlatform/blob/master/TutorialXamarin.md).
