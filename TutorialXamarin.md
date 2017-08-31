@@ -42,12 +42,11 @@ Realm Object Server の起動を確認したら、`＜ルートディレクト�
 
 #### Windows の場合
 
-Windows の場合も同じく[こちら](https://realm.io/docs/get-started/installation/mac/)から macOS Bundle をダウンロードします。ダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
+Windows の場合は事前にビルドされたアプリが存在しないため、自前でビルドする必要があります。そのため、macOS と同じく[こちら](https://realm.io/docs/get-started/installation/mac/)から macOS Bundle をダウンロードします。ダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
 
 ![Realm](images/Realm0-08.png)
 
-
-事前にビルドされたアプリが存在しないため、自前でビルドする必要があります。zip ファイル内の「demo\RealmTasks\RealmTasks Xamarin」フォルダを展開します。
+zip ファイル内の「demo\RealmTasks\RealmTasks Xamarin」フォルダを展開します。
 
 展開されたフォルダ内の `RealmTasks.sln` をダブルクリックして Visual Studio を起動します。
 
@@ -55,7 +54,7 @@ Windows の場合も同じく[こちら](https://realm.io/docs/get-started/insta
 
 ![Realm](images/Realm0-09.png)
 
-「RealmTask.Droid」プロジェクトをみぎくりっくして、「スタートアッププロジェクトに設定」を選択します。
+「RealmTask.Droid」プロジェクトを右クリックして、「スタートアッププロジェクトに設定」を選択します。
 
 ![Realm](images/Realm0-10.png)
 
@@ -86,7 +85,6 @@ Windows 側の事前準備作業は少し長いですが以上です。
 ![Realm](images/Realm0-06.png)
 
 ![Realm](images/Realm0-07.png)
-
 
 
 ### Xamarin.Forms プロジェクトを作成
