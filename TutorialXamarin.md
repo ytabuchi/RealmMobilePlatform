@@ -1,6 +1,6 @@
-## Tutorial：Xamarin.Forms アプリをスクラッチからビルドしよう
+## Tutorial：Realm Mobile Platform にアクセスするアプリを Xamarin.Forms で作ろう
 
-Swift でやっている Realm Mobile Platform のチュートリアル「[Realm Mobile Platform iOS App Tutorial](https://realm.io/docs/tutorials/realmtasks/)」を Xamarin.Forms でやってみましょう。
+Swift でやっている Realm Mobile Platform のチュートリアル「[Realm Mobile Platform iOS App Tutorial](https://realm.io/docs/tutorials/realmtasks/)」を Swift ではなく、C# で作ってみましょう。フレームワークには Xamarin.Forms を使用します。
 
 Realm Mobile Platform とはなんぞや？という方は、[公式ページ](https://realm.io/jp/products/realm-mobile-platform/) をご覧ください。
 
@@ -8,9 +8,11 @@ Realm Mobile Platform には Developer Edition があり、無料でオフライ
 
 Realm Mobile Platform のインストールは、公式ドキュメントの [Getting Started with the Realm Mobile Platform](https://realm.io/docs/get-started/) を参照してください。
 
-macOS 用には、ライブラリを含む Realm Object Server（Realm Mobile Platform のサーバーアプリの呼称）が用意されていて、圧縮ファイルを回答しコマンドを実行するだけで動作します。非常に簡単に導入できるため、今回は macOS 版を使用してこのチュートリアルを進めたいと思います。
+macOS 用には、ライブラリを含む Realm Object Server（Realm Mobile Platform のサーバーアプリの呼称）が用意されていて[こちら](https://realm.io/docs/get-started/installation/mac/)からダウンロードできます。ダウンロード後、圧縮ファイルを展開しコマンドを実行するだけで動作します。非常に簡単に導入できるため、今回は macOS 版を使用してこのチュートリアルを進めたいと思います。
 
-Linux がある方は Linux にインストールしてアクセスしても良いですし、docker で立てても良いかもしれないですね。（Azure にハンズオンで環境がない方向けに使ってもらう用のインスタンスは立てています。）
+Linux がある方は Linux にインストールしてアクセスしても良いですし、docker で立てても良いかもしれないですね。
+
+> こっそり私の Azure 環境にハンズオンで Realm Object Server の環境が作れない方に使ってもらうためのインスタンスと Docker コンテナはすでに立ててありますのでない方は仰ってください。
 
 ### 事前準備
 
@@ -28,6 +30,8 @@ Realm Object Server の展開が終了したら、ルートディレクトリの
 
 ![Realm](images/Realm0-03.png)
 
+#### macOS の場合
+
 Realm Object Server の起動を確認したら、`＜ルートディレクトリ＞/demo/RealmTasks/RealmTasks.app` を起動します。
 
 ![Realm](images/Realm0-04.png)
@@ -35,6 +39,47 @@ Realm Object Server の起動を確認したら、`＜ルートディレクト�
 先ほど作成した Admin User でログインします。ログイン後、右上の「＋」ボタンからタスクを登録します。
 
 ![Realm](images/Realm0-05.png)
+
+#### Windows の場合
+
+Windows の場合も同じく[こちら](https://realm.io/docs/get-started/installation/mac/)から macOS Bundle をダウンロードします。ダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
+
+![Realm](images/Realm0-08.png)
+
+
+事前にビルドされたアプリが存在しないため、自前でビルドする必要があります。zip ファイル内の「demo\RealmTasks\RealmTasks Xamarin」フォルダを展開します。
+
+展開されたフォルダ内の `RealmTasks.sln` をダブルクリックして Visual Studio を起動します。
+
+ソリューションを右クリックして、「NuGet パッケージの復元」を行います。
+
+![Realm](images/Realm0-09.png)
+
+「RealmTask.Droid」プロジェクトをみぎくりっくして、「スタートアッププロジェクトに設定」を選択します。
+
+![Realm](images/Realm0-10.png)
+
+> エミュレーターへの配置がオンになっていない可能性がありますので、Visual Studio のメニューから「ビルド＞構成マネージャー」から構成マネージャーを開き、Android プロジェクトの「配置」にチェックを入れてください。<br />
+<br />
+![Realm](images/Realm0-11.png)
+
+適切なエミュレーターまたはデバイスを選択し、「▶」ボタンでデバッグを開始します。
+
+起動したら Realm Object Server の IP を適切な IP アドレスとポート番号に変更し、ユーザー名、パスワードでログインします。
+
+![Realm](images/Realm0-12.png)
+
+ログイン後、「My Tasks」の右側の 0（個）をクリックします。
+
+![Realm](images/Realm0-13.png)
+
+Task 入力欄で右上の＋ボタンからタスクをいくつか入力します。
+
+![Realm](images/Realm0-14.png)
+
+Windows 側の事前準備作業は少し長いですが以上です。
+
+#### データ作成後
 
 ブラウザの Realm タブから、データが登録されていることが分かります。
 
@@ -46,7 +91,7 @@ Realm Object Server の起動を確認したら、`＜ルートディレクト�
 
 ### Xamarin.Forms プロジェクトを作成
 
-最初に Xamarin.Forms のプロジェクトを作成します。
+それでは本題のモバイルアプリの作成に入ってきます。最初に Xamarin.Forms のプロジェクトを作成します。
 
 #### macOS の場合
 
