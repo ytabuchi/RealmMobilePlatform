@@ -20,31 +20,35 @@ Linux がある方は Linux にインストールしてアクセスしても良�
 
 Realm Object Server の展開が終了したら、ルートディレクトリの `start-object-server.command` を実行します。
 
-![Realm](images/Realm0-01.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-01.png" width="600" />
 
 ブラウザが起動し、ログイン画面が表示されます。
 
-![Realm](images/Realm0-02.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-02.png" width="600" />
 
 任意のメールアドレスとパスワードで Admin User を作成します。この時のユーザー名とパスワードを後で使用しますので、メモしておきましょう。ログインすると Dashboard や存在する Realm Database、User などが閲覧できます。
 
-![Realm](images/Realm0-03.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-03.png" width="600" />
+
 
 #### macOS の場合
 
 Realm Object Server の起動を確認したら、`＜ルートディレクトリ＞/demo/RealmTasks/RealmTasks.app` を起動します。
 
-![Realm](images/Realm0-04.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-04.png" width="450" />
+
 
 先ほど作成した Admin User でログインします。ログイン後、右上の「＋」ボタンからタスクを登録します。
 
-![Realm](images/Realm0-05.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-05.png" width="450" />
+
 
 #### Windows の場合
 
 Windows の場合は事前にビルドされたアプリが存在しないため、自前でビルドする必要があります。そのため、macOS と同じく[こちら](https://realm.io/docs/get-started/installation/mac/)から macOS Bundle をダウンロードします。ダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
 
-![Realm](images/Realm0-08.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-08.png" width="300" />
+
 
 zip ファイル内の「demo\RealmTasks\RealmTasks Xamarin」フォルダを展開します。
 
@@ -52,29 +56,31 @@ zip ファイル内の「demo\RealmTasks\RealmTasks Xamarin」フォルダを展
 
 ソリューションを右クリックして、「NuGet パッケージの復元」を行います。
 
-![Realm](images/Realm0-09.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-09.png" width="300" />
+
 
 「RealmTask.Droid」プロジェクトを右クリックして、「スタートアッププロジェクトに設定」を選択します。
 
-![Realm](images/Realm0-10.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-10.png" width="300" />
+
 
 > エミュレーターへの配置がオンになっていない可能性がありますので、Visual Studio のメニューから「ビルド＞構成マネージャー」から構成マネージャーを開き、Android プロジェクトの「配置」にチェックを入れてください。
 
-![Realm](images/Realm0-11.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-11.png" width="450" />
 
 適切なエミュレーターまたはデバイスを選択し、「▶」ボタンでデバッグを開始します。
 
 起動したら Realm Object Server の IP を適切な IP アドレスとポート番号に変更し、ユーザー名、パスワードでログインします。
 
-![Realm](images/Realm0-12.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-12.png" width="300" />
 
 ログイン後、「My Tasks」の右側の 0（個）をクリックします。
 
-![Realm](images/Realm0-13.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-13.png" width="300" />
 
 Task 入力欄で右上の＋ボタンからタスクをいくつか入力します。
 
-![Realm](images/Realm0-14.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-14.png" width="300" />
 
 Windows 側の事前準備作業は少し長いですが以上です。
 
@@ -82,9 +88,9 @@ Windows 側の事前準備作業は少し長いですが以上です。
 
 ブラウザの Realm タブから、データが登録されていることが分かります。
 
-![Realm](images/Realm0-06.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-06.png" width="600" />
 
-![Realm](images/Realm0-07.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-07.png" width="600" />
 
 
 ### Xamarin.Forms プロジェクトを作成
@@ -95,26 +101,26 @@ Windows 側の事前準備作業は少し長いですが以上です。
 
 プロジェクトを作成します。新規プロジェクトを作成して「Multiplatform＞App＞Black Forms App」です。
 
-![Realm](images/Realm1-01.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-01.png" width="450" />
 
 今回は名前を「RealmMobilePlatformSample」にしました。また、`ポータブルクラスライブラリ（Portable Class Library）` ではなく、`共有ライブラリ（Shared Library）` を使用しますのでご注意ください。
 
-![Realm](images/Realm1-02.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-02.png" width="450" />
 
 そのままプロジェクトを作成します。
 
-![Realm](images/Realm1-03.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-03.png" width="450" />
 
 最初に表示するページとして `RealmMobilePlatformSamplePage.xaml` と `RealmMobilePlatformSamplePage.xaml.cs` が作成されているはずです。今回は macOS を使用して開発して行きますので文中にはこのファイル名が出てきますが、Windows の場合は `MainPage.xaml` と `MainPage.xaml.cs` が作成されますので適宜読み替えてください。
 
 #### Windows
 
 プロジェクトを作成します。「Visual C#＞Cross-Platform＞Cross Platform App (Xamarin)」です。
-![Realm](images/Realm1-04.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-04.png" width="450" />
 
 次の画面で「空のアプリ」「Xamarin.Forms」「共有プロジェクト」を選択した状態で「OK」をクリックしてプロジェクトを作成してください。
 
-![Realm](images/Realm1-05.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-05.png" width="450" />
 
 ### 画面を作成
 
@@ -135,9 +141,9 @@ macOS では、iOS／Android のプロジェクトを右クリックして、「
 
 「Realm」で検索して、「Realm 1.6.0」（2017/08/28 時点）をインストールします。
 
-![Realm](images/Realm2-01.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm2-01.png" width="450" />
 
-![Realm](images/Realm2-02.png)
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm2-02.png" width="450" />
 
 少し時間が掛かるのと、ライブラリの使用許諾のダイアログが表示されるのでのんびり待ちましょう。
 
@@ -491,7 +497,7 @@ private async void SetupRealmAsync()
             user = await User.LoginAsync(credentials, new Uri($"http://{serverIp}"));
         }
         var config = new SyncConfiguration(user, new Uri($"realm://{serverIp}/~/realmtasks"));
-        _realm = Realm.GetInstance(config);
+        _realm = await Realm.GetInstanceAsync(config);
     }
     catch (Exception)
     {
