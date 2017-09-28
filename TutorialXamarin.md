@@ -172,13 +172,13 @@ using Realms;
 ```csharp
 public class TaskList : RealmObject
 {
-	[PrimaryKey]
-	[Required]
-	[MapTo("id")]
-	public string Id { get; set; }
+		[PrimaryKey]
+		[Required]
+		[MapTo("id")]
+		public string Id { get; set; }
 
-	[MapTo("text")]
-	[Required]
+		[MapTo("text")]
+		[Required]
     public string Title { get; set; } = string.Empty;
 
     [MapTo("items")]
@@ -540,10 +540,10 @@ private async void SetupRealmAsync()
 private void UpdateList()
 {
     if (_realm.All<TaskList>().FirstOrDefault() != null)
-	｛
+    {
         _items = _realm.All<TaskList>().FirstOrDefault().Items;
-    	this.BindingContext = _items;
-	}
+        this.BindingContext = _items;
+    }
 }
 ```
 
@@ -565,7 +565,7 @@ ListView を更新するだけだった `AddAsync` メソッドを以下のよ�
 var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
 if (!string.IsNullOrEmpty(text))
 {
-	// この部分を書き換えています。
+		// この部分を書き換えています。
     try
     {
         _realm.Write(() =>
@@ -617,7 +617,7 @@ namespace RealmMobilePlatformSample
 
             if (!string.IsNullOrEmpty(text))
             {
-				// この部分を書き換えています。
+								// この部分を書き換えています。
                 try
                 {
                     _realm.Write(() =>
