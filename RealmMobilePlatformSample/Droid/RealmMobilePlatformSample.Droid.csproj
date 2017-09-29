@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+<AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -159,10 +160,10 @@
     <AndroidResource Include="Resources\layout\Tabbar.axml" />
     <AndroidResource Include="Resources\layout\Toolbar.axml" />
     <AndroidResource Include="Resources\values\styles.xml" />
-    <AndroidResource Include="Resources\drawable\icon.png" />
-    <AndroidResource Include="Resources\drawable-hdpi\icon.png" />
-    <AndroidResource Include="Resources\drawable-xhdpi\icon.png" />
-    <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable\ic_launcher.png" />
   </ItemGroup>
   <Import Project="..\RealmMobilePlatformSample\RealmMobilePlatformSample.projitems" Label="Shared" Condition="Exists('..\RealmMobilePlatformSample\RealmMobilePlatformSample.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
