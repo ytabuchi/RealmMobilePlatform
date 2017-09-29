@@ -20,13 +20,15 @@
             <DataTemplate>
                 <ViewCell>
                     <ViewCell.ContextActions>
-                        <MenuItem Clicked="OnDelete" Text="Delete" CommandParameter="{Binding}" IsDestructive="True" />
+                        <MenuItem Clicked="OnDelete" 
+                                  Text="Delete"
+                                  CommandParameter="{Binding}"
+                                  IsDestructive="True" />
                     </ViewCell.ContextActions>
                     <Label Text="{Binding Title}"
                            Opacity="{Binding Completed, Converter={StaticResource opacityConverter}}"
                            VerticalOptions="Center"
                            Margin="15,0,0,0"/>
-                    <!--  -->
                 </ViewCell>
             </DataTemplate>
         </ListView.ItemTemplate>

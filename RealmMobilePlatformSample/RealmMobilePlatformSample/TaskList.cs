@@ -6,13 +6,13 @@ namespace RealmMobilePlatformSample
 {
     public class TaskList : RealmObject
     {
-		[PrimaryKey]
-		[Required]
-		[MapTo("id")]
-		public string Id { get; set; }
+        [PrimaryKey]
+        [Required]
+        [MapTo("id")]
+        public string Id { get; set; }
 
-		[MapTo("text")]
-		[Required]
+        [MapTo("text")]
+        [Required]
         public string Title { get; set; } = string.Empty;
 
         [MapTo("items")]

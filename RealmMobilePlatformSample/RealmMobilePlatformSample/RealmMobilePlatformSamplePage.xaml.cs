@@ -29,6 +29,7 @@ namespace RealmMobilePlatformSample
 
             if (!string.IsNullOrEmpty(text))
             {
+                // この部分を書き換えています。
                 try
                 {
                     _realm.Write(() =>
@@ -118,7 +119,7 @@ namespace RealmMobilePlatformSample
                     user = await User.LoginAsync(credentials, new Uri($"http://{serverIp}"));
                 }
                 var config = new SyncConfiguration(user, new Uri($"realm://{serverIp}/~/realmtasks"));
-                _realm = Realm.GetInstance(config);
+                _realm = await Realm.GetInstanceAsync(config);
             }
             catch (Exception)
             {
