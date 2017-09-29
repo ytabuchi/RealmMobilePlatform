@@ -172,13 +172,13 @@ using Realms;
 ```csharp
 public class TaskList : RealmObject
 {
-		[PrimaryKey]
-		[Required]
-		[MapTo("id")]
-		public string Id { get; set; }
+    [PrimaryKey]
+    [Required]
+    [MapTo("id")]
+    public string Id { get; set; }
 
-		[MapTo("text")]
-		[Required]
+    [MapTo("text")]
+    [Required]
     public string Title { get; set; } = string.Empty;
 
     [MapTo("items")]
@@ -277,7 +277,7 @@ public partial class RealmMobilePlatformSamplePage : ContentPage
         InitializeComponent();
 
         _items.Add(new Task{ Title = "My First Task" });
-		_items.Add(new Task{ Title = "Completed Task", Completed = true });
+        _items.Add(new Task{ Title = "Completed Task", Completed = true });
         this.BindingContext = _items;
     }
 
@@ -452,6 +452,7 @@ _items.Add(new Task{ Title = "Completed Task", Completed = true });
 
 無事ダイアログで入力したデータが ListView に追加されていれば次に進みます。
 
+
 ### Realm への追加と同期処理の実装
 
 実際に Realm にデータを追加していきましょう。コードビハインド `RealmMobilePlatformSamplePage.xaml.cs` を開き、using を追加します。
@@ -562,23 +563,27 @@ if (user != null)
 ListView を更新するだけだった `AddAsync` メソッドを以下のように書き換えます。
 
 ```csharp
-var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
-if (!string.IsNullOrEmpty(text))
+private async void AddAsync(object sender, EventArgs e)
 {
-		// この部分を書き換えています。
-    try
+    var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
+
+    if (!string.IsNullOrEmpty(text))
     {
-        _realm.Write(() =>
+        // この部分を書き換えています。
+        try
         {
-            _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Count(), new Task
+            _realm.Write(() =>
             {
-                Title = text
+                _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Count(), new Task
+                {
+                    Title = text
+                });
             });
-        });
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine(ex);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(ex);
+        }
     }
 }
 ```
@@ -617,7 +622,7 @@ namespace RealmMobilePlatformSample
 
             if (!string.IsNullOrEmpty(text))
             {
-								// この部分を書き換えています。
+                // この部分を書き換えています。
                 try
                 {
                     _realm.Write(() =>
@@ -670,14 +675,14 @@ namespace RealmMobilePlatformSample
             }
         }
 
-		private void UpdateList()
-		{
-		    if (_realm.All<TaskList>().FirstOrDefault() != null)
-			｛
-		        _items = _realm.All<TaskList>().FirstOrDefault().Items;
-		    	this.BindingContext = _items;
-			}
-		}
+        private void UpdateList()
+        {
+            if (_realm.All<TaskList>().FirstOrDefault() != null)
+            {
+                _items = _realm.All<TaskList>().FirstOrDefault().Items;
+                this.BindingContext = _items;
+            }
+        }
     }
 }
 ```
@@ -710,14 +715,17 @@ namespace RealmMobilePlatformSample
 ```xml
 // 略
 <ViewCell>
-	<ViewCell.ContextActions>
-	    <MenuItem Clicked="OnDelete" Text="Delete" CommandParameter="{Binding}" IsDestructive="True" />
-	</ViewCell.ContextActions>
-	<!-- OpecityプロパティにCompletedをバインドして、Converterでtrueなら1(不透明)、falseなら0.5(半透明)を返すようにします。-->
-	<Label Text="{Binding Title}"
-		   Opacity="{Binding Completed, Converter={StaticResource opacityConverter}}"
-		   VerticalOptions="Center"
-		   Margin="15,0,0,0"/>
+  <ViewCell.ContextActions>
+    <MenuItem Clicked="OnDelete"
+              Text="Delete"
+              CommandParameter="{Binding}"
+              IsDestructive="True" />
+  </ViewCell.ContextActions>
+  <!-- OpecityプロパティにCompletedをバインドして、Converterでtrueなら1(不透明)、falseなら0.5(半透明)を返すようにします。-->
+  <Label Text="{Binding Title}"
+         Opacity="{Binding Completed, Converter={StaticResource opacityConverter}}"
+         VerticalOptions="Center"
+         Margin="15,0,0,0"/>
 </ViewCell>
 // 略
 ```
