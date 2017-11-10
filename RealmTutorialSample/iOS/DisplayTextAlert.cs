@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using UIKit;
-using RealmMobilePlatformSample.iOS;
+using RealmTutorialSample.iOS;
 
 [assembly: Dependency(typeof(DisplayTextAlert))]
 
-namespace RealmMobilePlatformSample.iOS
+namespace RealmTutorialSample.iOS
 {
     public class DisplayTextAlert : IDisplayTextAlert
     {

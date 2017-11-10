@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Realms;
 
-namespace RealmMobilePlatformSample
+namespace RealmTutorialSample
 {
     public class TaskList : RealmObject
     {
@@ -16,7 +16,7 @@ namespace RealmMobilePlatformSample
         public string Title { get; set; } = string.Empty;
 
         [MapTo("items")]
-        public IList<Task> Items { get; }
+        public IRealmCollection<Task> Items { get; }
     }
 
     public class Task : RealmObject

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Realms;
@@ -10,7 +11,7 @@ namespace RealmTutorialSample
 {
     public partial class RealmTutorialSamplePage : ContentPage
     {
-        IList<Task> _items = new List<Task>();
+        IRealmCollection<Task> _items;
         Realm _realm;
         IDisposable _notificationToken;
 
@@ -19,23 +20,25 @@ namespace RealmTutorialSample
             InitializeComponent();
 
             SetupRealmAsync();
+
+
         }
 
         private async void AddAsync(object sender, EventArgs e)
         {
             var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
 
-            if (!string.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty("text")) //text
             {
                 // この部分を書き換えています。
                 try
                 {
                     _realm.Write(() =>
                     {
-                        _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
-                        {
-                            Title = text
-                        });
+                        //_items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
+                        //{
+                        //    Title = text
+                        //});
                     });
                 }
                 catch (Exception ex)
@@ -98,9 +101,9 @@ namespace RealmTutorialSample
 
         private async void SetupRealmAsync()
         {
-            var username = Secrets.UserName;
-            var password = Secrets.Password;
-            var serverIp = Secrets.ServerIp;
+            var username = "realm-admin"; // use default.
+            var password = ""; // use default.
+            var serverIp = "127.0.0.1:9080"; // use default.
 
             User user = null;
             try

@@ -2,7 +2,7 @@
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace RealmMobilePlatformSample
+namespace RealmTutorialSample
 {
     public class OpacityConverter : IValueConverter
     {

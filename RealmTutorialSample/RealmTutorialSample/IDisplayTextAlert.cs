@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace RealmMobilePlatformSample
+namespace RealmTutorialSample
 {
     public interface IDisplayTextAlert
     {
