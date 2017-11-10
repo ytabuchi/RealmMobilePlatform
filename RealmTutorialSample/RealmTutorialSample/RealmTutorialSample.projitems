@@ -19,5 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)RealmTutorialSamplePage.xaml.cs">
       <DependentUpon>RealmTutorialSamplePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)IDisplayTextAlert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OpacityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TaskList.cs" />
   </ItemGroup>
 </Project>
