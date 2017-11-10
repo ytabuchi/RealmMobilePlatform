@@ -8,7 +8,7 @@ namespace RealmTutorialSample
         {
             InitializeComponent();
 
-            MainPage = new RealmTutorialSamplePage();
+            MainPage = new NavigationPage(new RealmTutorialSamplePage());
         }
 
         protected override void OnStart()

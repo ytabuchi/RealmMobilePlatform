@@ -16,7 +16,7 @@ namespace RealmTutorialSample
         public string Title { get; set; } = string.Empty;
 
         [MapTo("items")]
-        public IRealmCollection<Task> Items { get; }
+        public IList<Task> Items { get; }
     }
 
     public class Task : RealmObject

@@ -11,7 +11,7 @@ namespace RealmTutorialSample
 {
     public partial class RealmTutorialSamplePage : ContentPage
     {
-        IRealmCollection<Task> _items;
+        IList<Task> _items = new List<Task>();
         Realm _realm;
         IDisposable _notificationToken;
 
@@ -35,10 +35,10 @@ namespace RealmTutorialSample
                 {
                     _realm.Write(() =>
                     {
-                        //_items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
-                        //{
-                        //    Title = text
-                        //});
+                        _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
+                        {
+                            Title = text
+                        });
                     });
                 }
                 catch (Exception ex)
@@ -101,8 +101,8 @@ namespace RealmTutorialSample
 
         private async void SetupRealmAsync()
         {
-            var username = "realm-admin"; // use default.
-            var password = ""; // use default.
+            var username = "ytabuchi"; // use default.
+            var password = "realm"; // use default.
             var serverIp = "127.0.0.1:9080"; // use default.
 
             User user = null;
