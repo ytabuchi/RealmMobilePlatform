@@ -12,6 +12,7 @@ namespace RealmTutorialSample
     public partial class RealmTutorialSamplePage : ContentPage
     {
         IList<Task> _items = new List<Task>();
+
         Realm _realm;
         IDisposable _notificationToken;
 
@@ -20,21 +21,21 @@ namespace RealmTutorialSample
             InitializeComponent();
 
             SetupRealmAsync();
-
-
         }
 
         private async void AddAsync(object sender, EventArgs e)
         {
+            // Dependency Servicesを使用してiOS／Androidネイティブのダイアログを表示するコードを呼び出します。
             var text = await DependencyService.Get<IDisplayTextAlert>().Show("New Task", "Enter Task Name");
 
-            if (!string.IsNullOrEmpty("text")) //text
+            if (!string.IsNullOrEmpty(text))
             {
                 // この部分を書き換えています。
                 try
                 {
                     _realm.Write(() =>
                     {
+                        // Realmから最初のTaskListのItemsのうち、Completedの数の位置にTaskを追加します。
                         _items.Insert(_realm.All<TaskList>().FirstOrDefault().Items.Where(x => x.Completed).Count(), new Task
                         {
                             Title = text
@@ -50,6 +51,8 @@ namespace RealmTutorialSample
 
         private void OnDelete(object sender, EventArgs e)
         {
+            // ListViewCellのContextActionsが実行されると、sender引数で渡されるMenuItemのCommandParameterに
+            // Taskがバインドされて来るため、そのまま_item.Remove()に渡します。
             var mi = ((MenuItem)sender);
             var item = mi.CommandParameter as Task;
 
@@ -73,6 +76,7 @@ namespace RealmTutorialSample
                 return;
             }
 
+            // ListViewのItemがタップされると引数SelectedItemChangedEventArgsにオブジェクトが入っています。
             var item = e.SelectedItem as Task;
 
             try
@@ -101,42 +105,51 @@ namespace RealmTutorialSample
 
         private async void SetupRealmAsync()
         {
-            var username = "ytabuchi"; // use default.
-            var password = "realm"; // use default.
-            var serverIp = "127.0.0.1:9080"; // use default.
+            var username = ""; // 作成したユーザーを指定します。
+            var password = ""; // パスワード
+            var serverIp = "127.0.0.1:9080";
 
             User user = null;
             try
             {
                 user = User.Current;  // if still logged in from last session
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
 
             try
             {
                 if (user == null)
                 {
+                    // クレデンシャルを作成してユーザーを取得します。
                     var credentials = Credentials.UsernamePassword(username, password, createUser: false);
                     user = await User.LoginAsync(credentials, new Uri($"http://{serverIp}"));
                 }
+                // 同期対象のRealm(ここではログインユーザーが所有している（~でアクセス可能）realmtasks)を指定します。
                 var config = new SyncConfiguration(user, new Uri($"realm://{serverIp}/~/realmtasks"));
+                // 接続
                 _realm = await Realm.GetInstanceAsync(config);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex);
                 return;
             }
 
             if (user != null)
             {
+                // 最初に一度同期しておきます。
                 UpdateList();
-
+                // その後はRealm Object Serverのアップデートを通知で受け取り、受け取るたびに同期メソッドを実行します。
                 _notificationToken = _items.SubscribeForNotifications((sender, changes, error) => UpdateList());
             }
         }
 
         private void UpdateList()
         {
+            // RealmがあればローカルのコレクションをRealmコレクションで置き換えて、再バインドします。
             if (_realm.All<TaskList>().FirstOrDefault() != null)
                 _items = _realm.All<TaskList>().FirstOrDefault().Items;
 

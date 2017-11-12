@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using RealmMobilePlatformSample.Droid;
+using RealmTutorialSample.Droid;
 using Android;
 using Android.Widget;
 using Android.App;
 
 [assembly: Dependency(typeof(DisplayTextAlert))]
 
-namespace RealmMobilePlatformSample.Droid
+namespace RealmTutorialSample.Droid
 {
     public class DisplayTextAlert : IDisplayTextAlert
     {
@@ -30,7 +30,7 @@ namespace RealmMobilePlatformSample.Droid
             textDialog.SetTitle(title);
             textDialog.SetMessage(message);
             textDialog.SetView(editText);
-            textDialog.SetNegativeButton("Add", (sender, e) =>
+            textDialog.SetPositiveButton("Add", (sender, e) =>
             {
                 comp.SetResult(editText.Text);
             });
