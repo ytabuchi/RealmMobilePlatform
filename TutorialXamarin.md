@@ -113,7 +113,7 @@ Windows 側の事前準備作業は少し長いですが以上です。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-01.png" width="450" />
 
-今回は名前を「RealmMobilePlatformSample」にしました。また、`ポータブルクラスライブラリ（Portable Class Library）` ではなく、`共有ライブラリ（Shared Library）` を使用しますのでご注意ください。
+今回は名前を「RealmTutorialSample」にしました。また、`ポータブルクラスライブラリ（Portable Class Library）` ではなく、`共有ライブラリ（Shared Library）` を使用しますのでご注意ください。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-02.png" width="450" />
 
@@ -121,7 +121,7 @@ Windows 側の事前準備作業は少し長いですが以上です。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm1-03.png" width="450" />
 
-最初に表示するページとして `＜プロジェクト名＞Page.xaml` と `＜プロジェクト名＞Page.xaml.cs` が作成されているはずです（今回は `RealmMobilePlatformSamplePage.xaml` と `RealmMobilePlatformSamplePage.xaml.cs`）。本ドキュメントでは macOS を使用して開発していきますので文中にはこのファイル名が出てきますが、Windows の場合は `MainPage.xaml` と `MainPage.xaml.cs` が作成されますので適宜読み替えてください。
+最初に表示するページとして `＜プロジェクト名＞Page.xaml` と `＜プロジェクト名＞Page.xaml.cs` が作成されているはずです（今回は `RealmTutorialSamplePage.xaml` と `RealmTutorialSamplePage.xaml.cs`）。本ドキュメントでは macOS を使用して開発していきますので文中にはこのファイル名が出てきますが、Windows の場合は `MainPage.xaml` と `MainPage.xaml.cs` が作成されますので適宜読み替えてください。
 
 #### Windows
 
@@ -153,7 +153,7 @@ macOS では、iOS／Android のプロジェクトを右クリックして、「
 `App.xaml.cs` の `MainPage` の指定を次のように `NavigationPage` で初期ページを呼び出すように変更します。
 
 ```csharp
-MainPage = new NavigationPage(new RealmMobilePlatformSamplePage());
+MainPage = new NavigationPage(new RealmTutorialSamplePage());
 ```
 
 ### スキーマクラスの実装
@@ -211,7 +211,7 @@ using System;
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace RealmMobilePlatformSample
+namespace RealmTutorialSample
 {
     public class OpacityConverter : IValueConverter
     {
@@ -231,7 +231,7 @@ namespace RealmMobilePlatformSample
 }
 ```
 
-続いて `ListView` を作成します。`RealmMobilePlatformSamplePage.xaml` の `ContentPage` に `Title` プロパティを追加し、以下の `ListView` を追加します。
+続いて `ListView` を作成します。`RealmTutorialSamplePage.xaml` の `ContentPage` に `Title` プロパティを追加し、以下の `ListView` を追加します。
 
 Windows の場合はクラス名（`x:Class`）が `MainPage` です。`xmlns:local` がない場合は適宜追加してください。
 
@@ -239,8 +239,8 @@ Windows の場合はクラス名（`x:Class`）が `MainPage` です。`xmlns:lo
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:RealmMobilePlatformSample"
-             x:Class="RealmMobilePlatformSample.RealmMobilePlatformSamplePage"
+             xmlns:local="clr-namespace:RealmTutorialSample"
+             x:Class="RealmTutorialSample.RealmTutorialSamplePage"
              Title="My Tasks">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -265,14 +265,14 @@ Windows の場合はクラス名（`x:Class`）が `MainPage` です。`xmlns:lo
 </ContentPage>
 ```
 
-続いてコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` のクラスに `IList` のフィールドを作成します。後で削除しますが、ListView の動作確認用にサンプルの初期データを追加します。次のようなコードになります。
+続いてコードビハインド `RealmTutorialSamplePage.xaml.cs` のクラスに `IList` のフィールドを作成します。後で削除しますが、ListView の動作確認用にサンプルの初期データを追加します。次のようなコードになります。
 
 ```csharp
-public partial class RealmMobilePlatformSamplePage : ContentPage
+public partial class RealmTutorialSamplePage : ContentPage
 {
     IList<Task> _items = new List<Task>();
 
-    public RealmMobilePlatformSamplePage()
+    public RealmTutorialSamplePage()
     {
         InitializeComponent();
 
@@ -307,7 +307,7 @@ public interface IDisplayTextAlert
 }
 ```
 
-次に、`RealmMobilePlatformSamplePage.xaml` のコードビハインドに次のメソッドを追加します。
+次に、`RealmTutorialSamplePage.xaml` のコードビハインドに次のメソッドを追加します。
 
 ```csharp
 private async void AddAsync(object sender, EventArgs e)
@@ -332,13 +332,13 @@ iOS プロジェクトに移動して、`DisplayTextAlert.cs` クラスを作成
 using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using RealmMobilePlatformSample.iOS;
+using RealmTutorialSample.iOS;
 using UIKit;
 using Foundation;
 
 [assembly: Dependency(typeof(DisplayTextAlert))]
 
-namespace RealmMobilePlatformSample.iOS
+namespace RealmTutorialSample.iOS
 {
     public class DisplayTextAlert : IDisplayTextAlert
     {
@@ -383,14 +383,14 @@ iOS と同様に以下のコードで置き換えます。こちらも `using` �
 using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using RealmMobilePlatformSample.Droid;
+using RealmTutorialSample.Droid;
 using Android;
 using Android.Widget;
 using Android.App;
 
 [assembly: Dependency(typeof(DisplayTextAlert))]
 
-namespace RealmMobilePlatformSample.Droid
+namespace RealmTutorialSample.Droid
 {
     public class DisplayTextAlert : IDisplayTextAlert
     {
@@ -430,7 +430,7 @@ Dependency Services のコード内で現在の `Context` は `Forms.Context` �
 
 Xamarin.Forms プロジェクトでの作業に戻ります。`NavigationPage` の右上に＋ボタンを追加してダイアログを呼び出します。[Page](https://developer.xamarin.com/api/type/Xamarin.Forms.Page/) クラスの `ToolbarItems` プロパティを使用します。
 
-`RealmMobilePlatformSamplePage.xaml` の `ContentPage.Resources` の後に以下を追加します。
+`RealmTutorialSamplePage.xaml` の `ContentPage.Resources` の後に以下を追加します。
 
 ```xml
 <ContentPage.ToolbarItems>
@@ -440,7 +440,7 @@ Xamarin.Forms プロジェクトでの作業に戻ります。`NavigationPage` �
 
 `ToolbarItem` のプロパティは[公式ドキュメント](https://developer.xamarin.com/api/type/Xamarin.Forms.ToolbarItem/)を参照してください。
 
-次にコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` のサンプルの初期データを追加していた以下のコードを削除します。
+次にコードビハインド `RealmTutorialSamplePage.xaml.cs` のサンプルの初期データを追加していた以下のコードを削除します。
 
 ```csharp
 // これを削除
@@ -455,7 +455,7 @@ _items.Add(new Task{ Title = "Completed Task", Completed = true });
 
 ### Realm への追加と同期処理の実装
 
-実際に Realm にデータを追加していきましょう。コードビハインド `RealmMobilePlatformSamplePage.xaml.cs` を開き、using を追加します。
+実際に Realm にデータを追加していきましょう。コードビハインド `RealmTutorialSamplePage.xaml.cs` を開き、using を追加します。
 
 ```csharp
 using Realms;
@@ -486,7 +486,7 @@ private async void SetupRealmAsync()
 コンストラクターの `InitializeComponent` の後で `SetupRealmAsync` メソッドの呼びだしを追加します。
 
 ```csharp
-public RealmMobilePlatformSamplePage()
+public RealmTutorialSamplePage()
 {
     InitializeComponent();
 
@@ -588,7 +588,7 @@ private async void AddAsync(object sender, EventArgs e)
 }
 ```
 
-現時点でのコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` は以下のコードになっているはずです。
+現時点でのコードビハインド `RealmTutorialSamplePage.xaml.cs` は以下のコードになっているはずです。
 
 ```csharp
 using System;
@@ -599,15 +599,15 @@ using Xamarin.Forms;
 using Realms;
 using Realms.Sync;
 
-namespace RealmMobilePlatformSample
+namespace RealmTutorialSample
 {
-    public partial class RealmMobilePlatformSamplePage : ContentPage
+    public partial class RealmTutorialSamplePage : ContentPage
     {
         IList<Task> _items = new List<Task>();
         Realm _realm;
         IDisposable _notificationToken;
 
-        public RealmMobilePlatformSamplePage()
+        public RealmTutorialSamplePage()
         {
             InitializeComponent();
 
@@ -710,7 +710,7 @@ namespace RealmMobilePlatformSample
 
 まずは動くものができましたが、引き続き処理を追加して行きます。`Context Actions` を使ってスワイプ（iOS）と長押し（Android）でタスクの削除機能を実装します。
 
-`RealmMobilePlatformSamplePage.xaml` を開き、`ListView` の `ViewCell` 内に `Context Actions` を作成します。
+`RealmTutorialSamplePage.xaml` を開き、`ListView` の `ViewCell` 内に `Context Actions` を作成します。
 
 ```xml
 // 略
@@ -732,7 +732,7 @@ namespace RealmMobilePlatformSample
 
 `CommandParameter` にバインドすることで、Delete するアイテム（ここでは Task オブジェクト）を取得できます。
 
-コードビハインド `RealmMobilePlatformSamplePage.xaml.cs` を開き、`AddAsync` メソッドの後に以下のメソッドを追加します。
+コードビハインド `RealmTutorialSamplePage.xaml.cs` を開き、`AddAsync` メソッドの後に以下のメソッドを追加します。
 
 ```csharp
 private void OnDelete(object sender, EventArgs e)
@@ -771,7 +771,7 @@ private void OnDelete(object sender, EventArgs e)
     // 略
 ```
 
-次にコードビハインド `RealmMobilePlatformSamplePage.xaml.cs` で `OnDelete` メソッドの後に `OnSelect` メソッドを追加します。
+次にコードビハインド `RealmTutorialSamplePage.xaml.cs` で `OnDelete` メソッドの後に `OnSelect` メソッドを追加します。
 
 ```csharp
 private void OnSelect(object sender, SelectedItemChangedEventArgs e)
