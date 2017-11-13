@@ -105,9 +105,9 @@ namespace RealmTutorialSample
 
         private async void SetupRealmAsync()
         {
-            var username = ""; // 作成したユーザーを指定します。
-            var password = ""; // パスワード
-            var serverIp = "127.0.0.1:9080";
+            var username = "realm"; // 作成したユーザーを指定します。
+            var password = "realm"; // パスワード
+            var serverIp = (Device.RuntimePlatform == Device.Android) ? "10.0.2.2:9080" : "127.0.0.1:9080";
 
             User user = null;
             try

@@ -1,107 +1,116 @@
-## Tutorial：Realm Mobile Platform にアクセスするアプリを Xamarin.Forms で作ろう
+## Tutorial：Realm Platform にアクセスするアプリを Xamarin.Forms で作ろう
 
-タスク管理の iOS アプリを作成する Realm Mobile Platform（レルム・モバイル・プラットフォーム） のチュートリアル「[Realm Mobile Platform iOS App Tutorial](https://realm.io/docs/tutorials/realmtasks/)」を Swift ではなく、C# で作ってみましょう。フレームワークには Xamarin.Forms を使用します。
+タスク管理の iOS アプリを作成する Realm Platform（レルム・モバイル・プラットフォーム） のチュートリアル「[Building Your First Realm Platform iOS App](https://realm.io/docs/tutorials/realmtasks/)」を Swift ではなく、C# で作ってみましょう。フレームワークには Xamarin.Forms を使用します。
 
-### Realm Mobile Platform とは
+### Realm Platform とは
 
-Realm Mobile Platform はローカルの Realm Mobile Database（通称 Realm）とサーバーサイドの Realm Object Server（レルム・オブジェクト・サーバー）を自動的に同期する仕組みを提供するサービスです。
+Realm Platform はローカルの Realm Mobile Database（通称 Realm）とサーバーサイドの Realm Object Server（レルム・オブジェクト・サーバー）を自動的に同期する仕組みを提供するサービスです。
 
 詳細は、[公式ページ](https://realm.io/jp/products/realm-mobile-platform/) をご覧ください。
 
-Realm Mobile Platform には Developer Edition があり、無料でオフラインファーストで自動同期の機能を備えたモバイルアプリを構築できます。有償の Professional Edition 以上では、サーバーサイドロジックを Node.js で構築したり、無制限の Realm Functions（いわゆる Azure Functions／AWS Lambda と同じような機能）が使えたりします。
+Realm Platform には Developer Edition があり、無料でオフラインファーストで自動同期の機能を備えたモバイルアプリを構築できます。有償の Professional Edition 以上では、サーバーサイドロジックを Node.js で構築したり、無制限の Realm Functions（いわゆる Azure Functions／AWS Lambda と同じような機能）が使えたりします。
 
-### Realm Mobile Platform のインストール
+### Realm Platform のインストール
 
-公式ドキュメントの [Getting Started with the Realm Mobile Platform](https://realm.io/docs/get-started/) を参照してください。
+公式ドキュメントの [Installing the Realm Platform](https://realm.io/docs/get-started/) を参照してください。
 
-macOS 用には、Realm Object Server が用意されていて[こちら](https://realm.io/docs/get-started/installation/mac/)からダウンロードできます。ダウンロード後、圧縮ファイルを任意の場所に展開し、コマンドを実行するだけで動作します。非常に簡単に導入できるため、macOS 版を使用することをお勧めします。
+本チュートリアルは macOS でのインストールを進めますが、Linux がある方は Linux にインストールしてアクセスしても良いでしょう。また、Windows 版は開発中のようです。期待しましょう。
 
-Linux がある方は Linux にインストールしてアクセスしても良いですし、docker で立てても良いかもしれないですね。
+> こっそり私の Azure 環境にハンズオンで Realm Object Server の環境が作れない方に使ってもらうためのインスタンスを用意しています。
 
-> こっそり私の Azure 環境にハンズオンで Realm Object Server の環境が作れない方に使ってもらうためのインスタンスと Docker コンテナはすでに立ててありますのでない方は仰ってください。
+Realm Object Server の展開が終了したら、任意のディレクトリで `ros start` コマンドを実行します。そのディレクトリ以下に Realm Object Server のインスタンスが立ち上がり、9080 番ポートのリスニングが開始されます。 
 
-### 事前準備
+```bash
+$ ros start
 
-事前準備として、Realm Object Server を起動し、データを登録する必要があります。
+info: Loaded feature token capabilities=[Sync], expires=Wed Apr 19 2017 23:15:29 GMT+0900 (JST)
+info: Realm Object Server version 2.0.16 is starting
+info: [sync] Realm sync server started ([realm-core-4.0.2], [realm-sync-2.1.0])
+info: [sync] Directory holding persistent state: /Users/ytabuchi/Documents/realm/ros/data/sync/user_data
+info: [sync] Operating mode: master_with_no_slave
+info: [sync] Listening on 127.0.0.1:59551 (sync protocol version 22)
+info: [http] 127.0.0.1 - GET /realms/files/%2F__wildcardpermissions HTTP/1.1 200 55 - 23.666 ms
+info: [http] 127.0.0.1 - GET /realms/files/%2F__password HTTP/1.1 200 44 - 12.780 ms
+info: Realm Object Server has started and is listening on http://0.0.0.0:9080
+info: [http] 127.0.0.1 - GET /realms/files/%2F__admin HTTP/1.1 200 41 - 1.474 ms
+info: [http] 127.0.0.1 - GET /realms/files/%2F__admin HTTP/1.1 200 41 - 2.113 ms
+```
 
-Realm Object Server の展開が終了したら、ルートディレクトリの `start-object-server.command` を実行します。
+初回起動時にメールアドレスを入力し、メールニュースに登録するか？を聞かれますので、YES を推しておきましょう。
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-01.png" width="600" />
+Realm Object Server の起動を確認したら次に進みます。
 
-ブラウザが起動し、ログイン画面が表示されます。Linux の場合はインストール時にサービス登録をしているので、`＜IPアドレス＞:9080` にアクセスします。
+### Realm Studio のインストール
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-02.png" width="600" />
+Realm Object Server 2.x から Node.js を使用したプロダクトに刷新され、Web のインターフェースは無くなりました。代わりに、以下の Realm Studio を使用します。Electron ベースのアプリで、Windows、macOS、Linux に対応しています。
 
-任意のメールアドレスとパスワードで Admin User を作成します。この時のユーザー名とパスワードを後で使用しますので、メモしておきましょう。ログインすると Dashboard や存在する Realm Database、User などが閲覧できます。
+[Realm Studio: open, edit, and manage your Realm data](https://realm.io/jp/products/realm-studio/)
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-03.png" width="600" />
+ダウンロード後、インストールして Realm Studio を起動します。
 
-Realm Object Server の起動を確認したらデータを登録します。
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-01.png" width="300" />
 
-#### macOS の場合
+「Connect to Realm Object Server」をクリックし、そのまま「Connect」をクリックします。
 
-`＜ルートディレクトリ＞/demo/RealmTasks/RealmTasks.app` を起動します。
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-02.png" width="300" />
+
+「Users」タブを開き、「Create new user」ボタンをクリックし、
+
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-03.png" width="450" />
+
+任意のユーザーを作成します。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-04.png" width="450" />
 
-
-先ほど作成したユーザーでログインします。ログイン後、右上の「＋」ボタンからタスクを登録します。
+ユーザーが作成されていることを確認してください。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-05.png" width="450" />
 
-事前準備は以上です。
+ユーザーが作成できたら次に進みます。
 
-#### Windows の場合
+### 事前準備
 
-Windows の場合は事前にビルドされたアプリが存在しないため、自前でビルドする必要があります。そのため、macOS と同じく[こちら](https://realm.io/docs/get-started/installation/mac/)から macOS Bundle をダウンロードします。ダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
+本チュートリアルのアプリが Realm Object Server にアクセスするために、データが格納されている必要があります。そのため、最初にサンプルアプリのソースコードをダウンロードします。
+
+[realm-demos/realm-tasks: To Do app built with Realm, inspired by Clear for iOS](https://github.com/realm-demos/realm-tasks) にアクセスし、右側の「Clone or Download＞Download Zip」をクリックします。
+
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-06.png" width="600" />
+
+Windows の場合はダウンロードした zip ファイルを「右クリック＞プロパティ」を選択し、「ブロックの解除」にチェックして「OK」をクリックします。
+
+zip ファイルを展開し、`RealmTasks Xamarin` フォルダ内の `RealmTasks.sln` をダブルクリックして Visual Studio for Mac／Visual Studio を起動します。
+
+Windows の場合はソリューションを右クリックして、「NuGet パッケージの復元」を行います。
+
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-07.png" width="300" />
+
+
+「RealmTask.Droid」プロジェクトを右クリックして、「スタートアッププロジェクトに設定」を選択します。macOS の場合は「RealmTask.iOS」でも構いません。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-08.png" width="300" />
-
-
-zip ファイル内の`demo\RealmTasks\RealmTasks Xamarin` フォルダを展開します。
-
-展開されたフォルダ内の `RealmTasks.sln` をダブルクリックして Visual Studio を起動します。
-
-ソリューションを右クリックして、「NuGet パッケージの復元」を行います。
-
+<br />
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-09.png" width="300" />
-
-
-「RealmTask.Droid」プロジェクトを右クリックして、「スタートアッププロジェクトに設定」を選択します。
-
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-10.png" width="300" />
 
 
 > エミュレーターへの配置がオンになっていない可能性がありますので、Visual Studio のメニューから「ビルド＞構成マネージャー」から構成マネージャーを開き、Android プロジェクトの「配置」にチェックを入れてください。
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-11.png" width="450" />
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-10.png" width="450" />
 
 適切なエミュレーターまたはデバイスを選択し、「▶」ボタンでデバッグを開始します。
 
 アプリが起動したら適切な IP アドレスとポート番号に変更し、ユーザー名、パスワードでログインします。
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-12.png" width="300" />
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-11.png" width="300" />
 
 ログイン後、「My Tasks」の右側の数字の「0」をタップします。
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-13.png" width="300" />
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-12.png" width="300" />
 
 Task 入力欄で右上の＋ボタンからタスクをいくつか入力します。
 
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-14.png" width="300" />
+<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-13.png" width="300" />
 
-Windows 側の事前準備作業は少し長いですが以上です。
-
-#### データ作成後
-
-ブラウザの Realm タブを開き、Path 欄の `xxxxxx/realmtasks` をクリックします。
-
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-06.png" width="600" />
-
-事前準備で登録したタスクが正しく反映されていることが分かります。
-
-<img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-07.png" width="600" />
-
+事前準備作業は少し長いですが以上です。
 
 ### Xamarin.Forms プロジェクトを作成
 
@@ -140,7 +149,7 @@ NuGet パッケージをインストールします。
 
 macOS では、iOS／Android のプロジェクトを右クリックして、「追加＞NuGet パッケージの追加」でパッケージマネージャーを起動します。Windows ではソリューションを右クリックして、「ソリューションの NuGet パッケージの管理」でパッケージマネージャーを起動します。
 
-「Realm」で検索して、最新版の「Realm」（2017/09/28 時点では 1.6.0）をインストールします。
+「Realm」で検索して、最新版の「Realm」（2017/11/13 時点では 2.0.0）をインストールします。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm2-01.png" width="450" />
 
@@ -371,7 +380,7 @@ namespace RealmTutorialSample.iOS
 }
 ```
 
-AddAsync ボタンが押された時に return を返したかったので、[@amay077](https://twitter.com/amay077) さんの [UIAlertController を async/await 対応させて便利に使う \- Qiita](http://qiita.com/amay077/items/0a3fa3dfac7f29a2807d) を参考にしました。
+AddAsync ボタンが押された時に return を返したかったので、[@amay077](https://twitter.com/amay077) さんの [UIAlertController を async/await 対応させて便利に使う - Qiita](http://qiita.com/amay077/items/0a3fa3dfac7f29a2807d) を参考にしました。
 
 Dependency Services のコード内では PresentViewController は `UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController` でアクセスできます。
 
@@ -412,7 +421,7 @@ namespace RealmTutorialSample.Droid
             textDialog.SetTitle(title);
             textDialog.SetMessage(message);
             textDialog.SetView(editText);
-            textDialog.SetNegativeButton("Add", (sender, e) =>
+            textDialog.SetPositiveButton("Add", (sender, e) =>
             {
                 comp.SetResult(editText.Text);
             });
@@ -469,7 +478,7 @@ Realm _realm;
 IDisposable _notificationToken;
 ```
 
-`AddAsync` メソッドの下に `SetupRealmAsync` メソッドを追加します。サンプルのソースコードでは、`.gitignore` に指定して公開されないようにした `Secrets.cs` に情報を記載しています。
+`AddAsync` メソッドの下に `SetupRealmAsync` メソッドを追加します。
 
 ```csharp
 private async void SetupRealmAsync()
@@ -541,16 +550,15 @@ private async void SetupRealmAsync()
 private void UpdateList()
 {
     if (_realm.All<TaskList>().FirstOrDefault() != null)
-    {
         _items = _realm.All<TaskList>().FirstOrDefault().Items;
-        this.BindingContext = _items;
-    }
+    
+    this.BindingContext = _items;
 }
 ```
 
 再度 `SetupRealmAsync` メソッドに戻り、処理を追加していきます。
 
-`user` が取得できていれば、先ほど作成した `UpdateList` メソッドを呼び出します。その後、Realm Object Server 側で変更があった際に発行される `notificationToken` を受け取った際の処理 `SubscribeForNotifications` 内でも `UpdateList` メソッドを呼び出します。`SetupRealmAsync` メソッドの最後に以下のコードを追加します。
+`user` が取得できていれば、先ほど作成した `UpdateList` メソッドを呼び出します。その後、Realm Object Server 側で変更があった際に発火される `notificationToken` を受け取った際の処理 `SubscribeForNotifications` 内でも `UpdateList` メソッドを呼び出します。`SetupRealmAsync` メソッドの最後に以下のコードを追加します。
 
 ```csharp
 if (user != null)
