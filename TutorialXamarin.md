@@ -18,7 +18,7 @@ Realm Platform には Developer Edition があり、無料でオフラインフ�
 
 > こっそり私の Azure 環境にハンズオンで Realm Object Server の環境が作れない方に使ってもらうためのインスタンスを用意しています。
 
-Realm Object Server の展開が終了したら、任意のディレクトリで `ros start` コマンドを実行します。そのディレクトリ以下に Realm Object Server のインスタンスが立ち上がり、9080 番ポートのリスニングが開始されます。 
+Realm Object Server の展開が終了したら、任意のディレクトリで `ros start` コマンドを実行します。そのディレクトリ以下に Realm Object Server のインスタンスが立ち上がり、9080 番ポートのリスニングが開始されます。
 
 ```bash
 $ ros start
@@ -36,17 +36,17 @@ info: [http] 127.0.0.1 - GET /realms/files/%2F__admin HTTP/1.1 200 41 - 1.474 ms
 info: [http] 127.0.0.1 - GET /realms/files/%2F__admin HTTP/1.1 200 41 - 2.113 ms
 ```
 
-初回起動時にメールアドレスを入力し、メールニュースに登録するか？を聞かれますので、YES を推しておきましょう。
+初回起動時にメールアドレスを入力し、メールニュースに登録するか？を聞かれますので、YES を推しておきましょう。
 
 Realm Object Server の起動を確認したら次に進みます。
 
 ### Realm Studio のインストール
 
-Realm Object Server 2.x から Node.js を使用したプロダクトに刷新され、Web のインターフェースは無くなりました。代わりに、以下の Realm Studio を使用します。Electron ベースのアプリで、Windows、macOS、Linux に対応しています。
+Realm Object Server 2.x から Node.js を使用したプロダクトに刷新され、Web のインターフェースは無くなりました。代わりに、以下の Realm Studio を使用します。Electron ベースのアプリで、Windows、macOS、Linux に対応しています。
 
 [Realm Studio: open, edit, and manage your Realm data](https://realm.io/jp/products/realm-studio/)
 
-ダウンロード後、インストールして Realm Studio を起動します。
+ダウンロード後、インストールして Realm Studio を起動します。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-01.png" width="300" />
 
@@ -58,7 +58,7 @@ Realm Object Server 2.x から Node.js を使用したプロダクトに刷新�
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-03.png" width="450" />
 
-任意のユーザーを作成します。
+任意のユーザーを作成します。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-04.png" width="450" />
 
@@ -70,7 +70,7 @@ Realm Object Server 2.x から Node.js を使用したプロダクトに刷新�
 
 ### 事前準備
 
-本チュートリアルのアプリが Realm Object Server にアクセスするために、データが格納されている必要があります。そのため、最初にサンプルアプリのソースコードをダウンロードします。
+本チュートリアルのアプリが Realm Object Server にアクセスするために、データが格納されている必要があります。そのため、最初にサンプルアプリのソースコードをダウンロードします。
 
 [realm-demos/realm-tasks: To Do app built with Realm, inspired by Clear for iOS](https://github.com/realm-demos/realm-tasks) にアクセスし、右側の「Clone or Download＞Download Zip」をクリックします。
 
@@ -80,7 +80,7 @@ Windows の場合はダウンロードした zip ファイルを「右クリッ�
 
 zip ファイルを展開し、`RealmTasks Xamarin` フォルダ内の `RealmTasks.sln` をダブルクリックして Visual Studio for Mac／Visual Studio を起動します。
 
-Windows の場合はソリューションを右クリックして、「NuGet パッケージの復元」を行います。
+Windows の場合はソリューションを右クリックして、「NuGet パッケージの復元」を行います。
 
 <img src="https://raw.githubusercontent.com/ytabuchi/RealmMobilePlatform/master/images/Realm0-07.png" width="300" />
 
@@ -551,7 +551,7 @@ private void UpdateList()
 {
     if (_realm.All<TaskList>().FirstOrDefault() != null)
         _items = _realm.All<TaskList>().FirstOrDefault().Items;
-    
+
     this.BindingContext = _items;
 }
 ```
