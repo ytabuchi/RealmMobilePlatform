@@ -135,6 +135,7 @@ namespace RealmTutorialSample
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
+                await DisplayAlert("Error", $"Message: {ex.Message}", "OK");
                 return;
             }
 
